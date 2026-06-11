@@ -74,7 +74,7 @@ def get_task_index(tasks_list, message):
 
 def get_reminder():
     reminder = input(
-        "Напоминание (ГГГГ-ММ-ДД ЧЧ:ММ) или Enter без напоминания: "
+        "Напоминание (ГГ-ММ-ДД ЧЧ:ММ) или Enter без напоминания: "
     ).strip()
 
     if reminder == "":
@@ -258,4 +258,6 @@ def main():
             print("Неверная команда")
 
 
-main()
+
+if __name__ == "__main__":
+    main()
