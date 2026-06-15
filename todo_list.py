@@ -24,9 +24,9 @@ def normalize_task(task):
     }
 
 
-def load_data():
+def load_data(file_path=DATA_FILE):
     try:
-        with open(DATA_FILE, "r", encoding="utf-8") as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             data = json.load(f)
     except FileNotFoundError:
         return [], []
@@ -45,17 +45,35 @@ def load_data():
     )
 
 
-def save_data():
+def save_data(file_path=DATA_FILE, tasks_list=None, completed_list=None):
+    if tasks_list is None:
+        tasks_list = tasks
+
+    if completed_list is None:
+        completed_list = completed_tasks
+
     data = {
-        "tasks": tasks,
-        "completed_tasks": completed_tasks
+        "tasks": tasks_list,
+        "completed_tasks": completed_list
     }
 
-    with open(DATA_FILE, "w", encoding="utf-8") as f:
+    with open(file_path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
 
 tasks, completed_tasks = load_data()
+
+
+def move_task_to_completed(tasks_list, completed_list, index):
+    task = tasks_list.pop(index)
+    task["done"] = True
+    completed_list.append(task)
+
+
+def restore_completed_task(tasks_list, completed_list, index):
+    task = completed_list.pop(index)
+    task["done"] = False
+    tasks_list.append(task)
 
 
 def get_task_index(tasks_list, message):
@@ -161,9 +179,7 @@ def complete_task():
     if index is None:
         return
 
-    task = tasks.pop(index)
-    task["done"] = True
-    completed_tasks.append(task)
+    move_task_to_completed(tasks, completed_tasks, index)
 
     save_data()
 
@@ -184,9 +200,7 @@ def restore_task():
     if index is None:
         return
 
-    task = completed_tasks.pop(index)
-    task["done"] = False
-    tasks.append(task)
+    restore_completed_task(tasks, completed_tasks, index)
 
     save_data()
 
@@ -256,7 +270,6 @@ def main():
             break
         else:
             print("Неверная команда")
-
 
 
 if __name__ == "__main__":
